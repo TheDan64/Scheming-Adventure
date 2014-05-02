@@ -28,7 +28,7 @@
 
 ; create the listener, which will take input sent to the server
 (define listener (tcp-listen 65525))
-(displayln "Server initialized.")
+(displayln "Server is now running.")
 
 ; main loop; find clients and give them their own thread
 (let server ()
@@ -47,7 +47,7 @@
 
               ; continue looping only until hitting eof:
               (cond ((not (eof-object? get-info))
-                     (displayln get-info) ; tmp
+                     ;(displayln get-info) ; tmp
                      ; handle different events
                      (let ((msg-type (car get-info))
                            (msg (if (null? (cdr get-info)) 'none (second get-info))))
