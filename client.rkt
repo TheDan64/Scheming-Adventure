@@ -50,32 +50,33 @@
                           (exit))
                          ((equal? input "commands")
                           (displayln "Here are the available commands:")
-                          (displayln "commands, quit."))
+                          (displayln "commands, say, quit."))
                          ((equal? start "say")
                           (displayln (string-append "You say, \"" (concat remain) "\""))
                           (send (list 'chat username (concat remain))))))))
           
           
-  ; should be threaded: ?
-  (define s-input (read in))
+          ; should be threaded: ?
+          (define s-input (read in))
   
-  (displayln s-input) ;tmp
+          (displayln s-input) ;tmp
   
-  (cond ((not (eof-object? s-input))
-         (cond ((eq? (car s-input) 'disconnect)
-                (displayln (string-append (car (cdr s-input)) " has disconnected!")))
+          (cond ((not (eof-object? s-input))
+                 (cond ((eq? (car s-input) 'disconnect)
+                        (displayln (string-append (car (cdr s-input)) " has disconnected!")))
                
-               ((eq? (car s-input) 'connect)
-                (if (equal? (string->symbol (second s-input)) username) (displayln "You have connected to the server!")
-                    (displayln (string-append (second s-input) " has connected!"))))
-               ((eq? (car s-input) 'chat)
-                (cond ((not (equal? (string->symbol (second s-input)) username))
-                       (displayln (string-append (second s-input) " says, \"" (third s-input) "\"")))))
-               ((eq? (car s-input) 'update-gamestate) ((game-world 'set-all-info) (second s-input)) (displayln "TMP - Gamestate successfully received.")))
-         
-         (client-input)))))
+                       ((eq? (car s-input) 'connect)
+                        (if (equal? (string->symbol (second s-input)) username) (displayln "You have connected to the server!")
+                            (displayln (string-append (second s-input) " has connected!"))))
+                       ((eq? (car s-input) 'chat)
+                        (cond ((not (equal? (second s-input) username))
+                               (displayln (string-append (second s-input) " says, \"" (third s-input) "\"")))))
+                       ((eq? (car s-input) 'update-gamestate) ((game-world 'set-all-info) (second s-input)))
+                       (else (display "Error ") (displayln s-input)))
+                 
+                 (client-input)))))
 
 ; cleanup on exit
-(send (list 'disconnect username))
-(close-input-port in)
-(close-output-port out)
+;(send (list 'disconnect username))
+;(close-input-port in)
+;(close-output-port out)
