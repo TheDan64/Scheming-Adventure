@@ -18,7 +18,7 @@
 
 (define (update-clients)
   (for-each (lambda (user)
-              (send-all (list 'connect (first user))) ; this seems to be wrong
+              ;(send-all (list 'connect (first user))) ; this seems to be wrong
               (cond ((not (null? user)) (send (list 'update-gamestate (game-world 'get-all-info)) (third user))))) ; this is the problematic line
               (game-world 'get-users)))
 
@@ -28,6 +28,7 @@
 
 ; create the listener, which will take input sent to the server
 (define listener (tcp-listen 65525))
+(displayln "Server initialized.")
 
 ; main loop; find clients and give them their own thread
 (let server ()

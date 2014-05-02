@@ -38,6 +38,7 @@
 
 ; Loop the getting of command line input from the client
 (thread (let client-input ()
+          ;(thread (lambda ()
           (display "Scheming Adventure: ")
           (define input (read-line))
           
@@ -50,16 +51,28 @@
                           (exit))
                          ((equal? input "commands")
                           (displayln "Here are the available commands:")
-                          (displayln "commands, say, quit."))
+                          (displayln "commands, players, say, quit."))
+                         ((equal? input "players")
+                          (displayln "These are the currently connected players:")
+                          (for-each (lambda (x) (displayln x)) (game-world 'get-users)))
+                         ((equal? start "more-info")
+                          (cond ((equal? (car remain) "commands")
+                                 (displayln "Usage - 'commands'"))
+                                ((equal? (car remain) "players")
+                                 (displayln "Usage - 'players'"))
+                                ((equal? (car remain) "say")
+                                 (displayln "Usage - 'say (text)'"))
+                                ((equal? (car remain) "quit")
+                                 (displayln "Usage - 'quit'"))))
                          ((equal? start "say")
                           (displayln (string-append "You say, \"" (concat remain) "\""))
-                          (send (list 'chat username (concat remain))))))))
+                          (send (list 'chat username (concat remain))))))));))
           
-          
+          (thread (lambda () 
           ; should be threaded: ?
           (define s-input (read in))
   
-          (displayln s-input) ;tmp
+          ;(displayln s-input) ;tmp
   
           (cond ((not (eof-object? s-input))
                  (cond ((eq? (car s-input) 'disconnect)
@@ -69,12 +82,12 @@
                         (if (equal? (string->symbol (second s-input)) username) (displayln "You have connected to the server!")
                             (displayln (string-append (second s-input) " has connected!"))))
                        ((eq? (car s-input) 'chat)
-                        (cond ((not (equal? (second s-input) username))
-                               (displayln (string-append (second s-input) " says, \"" (third s-input) "\"")))))
+                        (cond ((not (equal? (symbol->string (second s-input)) username))
+                               (displayln (string-append (symbol->string (second s-input)) " says, \"" (third s-input) "\"")))))
                        ((eq? (car s-input) 'update-gamestate) ((game-world 'set-all-info) (second s-input)))
-                       (else (display "Error ") (displayln s-input)))
+                       (else (display "Error ") (displayln s-input)))))))
                  
-                 (client-input)))))
+                 (client-input)))
 
 ; cleanup on exit
 ;(send (list 'disconnect username))
