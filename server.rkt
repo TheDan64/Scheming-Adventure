@@ -41,6 +41,7 @@
             
             (let loop ()
               ; read data
+              (cond ((port-closed? in) (kill-thread (current-thread))))
               (define get-info (read in))
 
               ; continue looping only until hitting eof:

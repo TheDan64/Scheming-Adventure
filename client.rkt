@@ -8,7 +8,8 @@
 (define username "") ; will be overwritten initially
 
 ; defines the tcp input and output ports
-(define-values (in out) (tcp-connect "25.7.77.62" 65525))
+;(define-values (in out) (tcp-connect "25.7.77.62" 65525))
+(define-values (in out) (tcp-connect "localhost" 65525))
 
 ; send a message to the server wrapper
 (define (send msg)
@@ -33,11 +34,6 @@
           ; the client wishes to disconnect
           (cond ((eq? input 'quit)
                  (send (list 'disconnect username))
-
-                 ; cleanup ports
-                 (close-input-port in)
-                 (close-output-port out)
-
                  (exit))
           
           (client-input))))
