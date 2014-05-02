@@ -8,7 +8,7 @@
 (define username "") ; will be overwritten initially
 
 ; defines the tcp input and output ports
-(define-values (in out) (tcp-connect "localhost" 65525))
+(define-values (in out) (tcp-connect "25.7.77.62" 65524))
 
 ; send a message to the server wrapper
 (define (send msg)
@@ -25,25 +25,42 @@
 (get-username)
 (send (list 'init-connect username))
 
-; Client main loop
-(let client ()
+; Loop the getting of command line input from the client
+(thread (let client-input ()
+          (display "Scheming Adventure: ")
+          (define input (read))
+          
+          ; the client wishes to disconnect
+          (cond ((eq? input 'quit)
+                 (send (list 'disconnect username))
+
+                 ; cleanup ports
+                 (close-input-port in)
+                 (close-output-port out)
+
+                 (exit))
+          
+          (client-input)))
+
+; Client main loop to get data from the server
+(let server-input ()
   
   ; should be threaded: ?
-  (define server-input (read in))
+  (define input (read in))
   
-  (displayln server-input) ;tmp
+  ;(displayln input) ;tmp
   
-  (cond ((not (eof-object? server-input))
-         (cond ((eq? (car server-input) 'disconnect)
-                (displayln (string-append (car (cdr server-input)) " has disconnected!")))
+  (cond ((not (eof-object? input))
+         (cond ((eq? (car input) 'disconnect)
+                (displayln (string-append (car (cdr input)) " has disconnected!")))
                
-               ((eq? (car server-input) 'connect)
-                (if (equal? (string->symbol (second server-input)) username) (displayln "You have connected to the server!")
-                    (displayln (string-append (second server-input) " has connected!"))))
+               ((eq? (car input) 'connect)
+                (if (equal? (string->symbol (second input)) username) (displayln "You have connected to the server!")
+                    (displayln (string-append (second input) " has connected!"))))
                     
-               ((eq? (car server-input) 'update-gamestate) ((game-world 'set-all-info) (second server-input)) (displayln "TMP - Gamestate successfully received.")))
+               ((eq? (car input) 'update-gamestate) ((game-world 'set-all-info) (second input)) (displayln "TMP - Gamestate successfully received.")))
          
-         (client))))
+         (server-input))))
 
 ; cleanup on exit
 (send (list 'disconnect username))

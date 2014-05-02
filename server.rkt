@@ -58,6 +58,9 @@
                              ((eq? msg-type 'movement)
                               (displayln (string-append username " moves around arbitrarily.")))
                              
+                             ((eq? msg-type 'disconnect)
+                              (check-clients))
+                             
                              (else (displayln (string-append "ERROR - unrecognized message passed from client: " (symbol->string msg-type))))))
 
                      (check-clients) ; see if the clients are still connected
