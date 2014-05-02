@@ -66,7 +66,8 @@
                                  (displayln "Usage - 'quit'"))))
                          ((equal? start "say")
                           (displayln (string-append "You say, \"" (concat remain) "\""))
-                          (send (list 'chat username (concat remain))))))));))
+                          (send (list 'chat username (concat remain))))
+                         (else (displayln (string-append "Error - no command found: " start)))))))
           
           (thread (lambda () 
           ; should be threaded: ?
