@@ -7,7 +7,7 @@
 (define create-game-world ; is serializable due to serial-lambda
   (let ((users '()))
     (lambda (action)
-      (cond ((eq? action 'get-users) (displayln users) users)
+      (cond ((eq? action 'get-users) users)
             
             ((eq? action 'add-user)
              (lambda (user input output)
@@ -20,7 +20,7 @@
             ; get a copy of all local serializable data
             ((eq? action 'get-all-info)
              (define user-names '())
-             (for-each (lambda (x) (display (car x)) (set! user-names (cons (car x) user-names))) users)
+             (for-each (lambda (x) (set! user-names (cons (car x) user-names))) users)
              
              (list user-names)) ; to be updated regularly
             

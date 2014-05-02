@@ -46,6 +46,7 @@
 
               ; continue looping only until hitting eof:
               (cond ((not (eof-object? get-info))
+                     (displayln get-info) ; tmp
                      ; handle different events
                      (let ((msg-type (car get-info))
                            (msg (if (null? (cdr get-info)) 'none (second get-info))))

@@ -55,29 +55,25 @@
                           (displayln (string-append "You say, \"" (concat remain) "\""))
                           (send (list 'chat username (concat remain))))))))
           
-          (client-input)))
-
-; Client main loop to get data from the server
-(let server-input ()
-  
+          
   ; should be threaded: ?
-  (define input (read in))
+  (define s-input (read in))
   
-  ;(displayln input) ;tmp
+  (displayln s-input) ;tmp
   
-  (cond ((not (eof-object? input))
-         (cond ((eq? (car input) 'disconnect)
-                (displayln (string-append (car (cdr input)) " has disconnected!")))
+  (cond ((not (eof-object? s-input))
+         (cond ((eq? (car s-input) 'disconnect)
+                (displayln (string-append (car (cdr s-input)) " has disconnected!")))
                
-               ((eq? (car input) 'connect)
-                (if (equal? (string->symbol (second input)) username) (displayln "You have connected to the server!")
-                    (displayln (string-append (second input) " has connected!"))))
-               ((eq? (car input) 'chat)
-                (cond ((not (equal? (second input) username))
-                       (displayln (string-append (second input) " says, \"" (third input) "\"")))))
-               ((eq? (car input) 'update-gamestate) ((game-world 'set-all-info) (second input)) (displayln "TMP - Gamestate successfully received.")))
+               ((eq? (car s-input) 'connect)
+                (if (equal? (string->symbol (second s-input)) username) (displayln "You have connected to the server!")
+                    (displayln (string-append (second s-input) " has connected!"))))
+               ((eq? (car s-input) 'chat)
+                (cond ((not (equal? (string->symbol (second s-input)) username))
+                       (displayln (string-append (second s-input) " says, \"" (third s-input) "\"")))))
+               ((eq? (car s-input) 'update-gamestate) ((game-world 'set-all-info) (second s-input)) (displayln "TMP - Gamestate successfully received.")))
          
-         (server-input))))
+         (client-input)))))
 
 ; cleanup on exit
 (send (list 'disconnect username))
