@@ -59,10 +59,15 @@
                              ((eq? msg-type 'movement)
                               (displayln (string-append username " moves around arbitrarily.")))
                              
+                             ; close the ports on disconnect
                              ((eq? msg-type 'disconnect)
                               (close-input-port in)
                               (close-output-port out)
                               (check-clients))
+                             
+                             ; pass the chat onto the rest of the users
+                             ((eq? msg-type 'chat)
+                              (send-all get-info))
                              
                              (else (displayln (string-append "ERROR - unrecognized message passed from client: " (symbol->string msg-type))))))
 

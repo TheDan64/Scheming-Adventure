@@ -16,6 +16,12 @@
   (write msg out)
   (flush-output out))
 
+; For combining a list of strings
+(define (concat lst)
+  (cond ((null? lst) "")
+        ((string? (car lst)) (string-append (car lst) " " (concat (cdr lst))))
+        (else "")))
+
 ; Ask the player for a username
 (define (get-username)
   (displayln "What would you like your username to be?")
@@ -26,17 +32,30 @@
 (get-username)
 (send (list 'init-connect username))
 
+; Display some intro text to introduce the text game
+(displayln (string-append (symbol->string username) ", you find yourself in a dark and gloomy forest."))
+(displayln "NOTE - Type 'commands' to see a list of currently available commands and 'more-info (command)' to get additional information on using that command")
+
 ; Loop the getting of command line input from the client
 (thread (let client-input ()
           (display "Scheming Adventure: ")
-          (define input (read))
+          (define input (read-line))
           
-          ; the client wishes to disconnect
-          (cond ((eq? input 'quit)
-                 (send (list 'disconnect username))
-                 (exit))
+          (cond ((not (null? (string-split input)))
+                 ; parse some client-inputted commands
+                 (let ((start (car (string-split input)))
+                       (remain (cdr (string-split input))))
+                   (cond ((equal? input "quit")
+                          (send (list 'disconnect username))
+                          (exit))
+                         ((equal? input "commands")
+                          (displayln "Here are the available commands:")
+                          (displayln "commands, quit."))
+                         ((equal? start "say")
+                          (displayln (string-append "You say, \"" (concat remain) "\""))
+                          (send (list 'chat username (concat remain))))))))
           
-          (client-input))))
+          (client-input)))
 
 ; Client main loop to get data from the server
 (let server-input ()
@@ -53,7 +72,9 @@
                ((eq? (car input) 'connect)
                 (if (equal? (string->symbol (second input)) username) (displayln "You have connected to the server!")
                     (displayln (string-append (second input) " has connected!"))))
-                    
+               ((eq? (car input) 'chat)
+                (cond ((not (equal? (second input) username))
+                       (displayln (string-append (second input) " says, \"" (third input) "\"")))))
                ((eq? (car input) 'update-gamestate) ((game-world 'set-all-info) (second input)) (displayln "TMP - Gamestate successfully received.")))
          
          (server-input))))
