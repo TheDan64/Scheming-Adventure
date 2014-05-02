@@ -59,6 +59,8 @@
                               (displayln (string-append username " moves around arbitrarily.")))
                              
                              ((eq? msg-type 'disconnect)
+                              (close-input-port in)
+                              (close-output-port out)
                               (check-clients))
                              
                              (else (displayln (string-append "ERROR - unrecognized message passed from client: " (symbol->string msg-type))))))

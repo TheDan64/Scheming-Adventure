@@ -8,7 +8,7 @@
 (define username "") ; will be overwritten initially
 
 ; defines the tcp input and output ports
-(define-values (in out) (tcp-connect "25.7.77.62" 65524))
+(define-values (in out) (tcp-connect "25.7.77.62" 65525))
 
 ; send a message to the server wrapper
 (define (send msg)
@@ -40,7 +40,7 @@
 
                  (exit))
           
-          (client-input)))
+          (client-input))))
 
 ; Client main loop to get data from the server
 (let server-input ()
